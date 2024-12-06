@@ -1,2 +1,124 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+    private final int accountNumber;
+    private final String accountHolderName;
+    private double balance;
+    private final List<String> transactions;
+
+    public BankAccount(int accountNumber, String accountHolderName, double balance) {
+        this.accountNumber = accountNumber;
+        this.accountHolderName = accountHolderName;
+        this.balance = balance;
+        this.transactions = new ArrayList<>();
+    }
+
+    public void deposit(double amount) {
+        balance += amount;
+        transactions.add("Deposit: +" + amount);
+    }
+
+    public void withdraw(double amount) {
+        balance -= amount;
+        transactions.add("Withdrawal: -" + amount);
+    }
+
+    public void displayAccountDetails() {
+        System.out.println("Account Number: " + accountNumber);
+        System.out.println("Account Holder Name: " + accountHolderName);
+        System.out.println("Balance: " + balance);
+    }
+
+    public void displayTransactionHistory() {
+        System.out.println("Transaction History:");
+        for (String transaction : transactions) {
+            System.out.println(transaction);
+        }
+    }
+
+    public double getBalance() {
+        return balance;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getAccountHolderName() {
+        return accountHolderName;
+    }
+}
+
+public class InsufficientFundsException extends Exception {
+    public InsufficientFundsException(String message) {
+        super(message);
+    }
+}
+public class InvalidInputException extends Exception {
+    public InvalidInputException(String message) {
+        super(message);
+    }
+}
+// Reportable interface for generating account summaries
+interface Reportable {
+    void generateAccountSummary();
+}
+public class SavingsAccount extends BankAccount implements Reportable {
+    private final double interestRate;
+
+    public SavingsAccount(int accountNumber, String accountHolderName, double balance, double interestRate) {
+        super(accountNumber, accountHolderName, balance);
+        this.interestRate = interestRate;
+    }
+
+    @Override
+    public void withdraw(double amount) {
+        // Custom logic for savings account withdrawal
+        super.withdraw(amount);
+    }
+
+    public void calculateInterest() {
+        double interest = getBalance() * interestRate / 100;
+        deposit(interest);
+        System.out.println("Interest of $" + interest + " added to the account.");
+    }
+
+    @Override
+    public void generateAccountSummary() {
+        System.out.println("Account Summary for: " + getAccountHolderName());
+        System.out.println("Account Number: " + getAccountNumber());
+        System.out.println("Balance: " + getBalance());
+    }
+}
+public class BankManagementSystem {
+    public static void main(String[] args) {
+        BankAccount account = new BankAccount(123456, "John Doe", 1000.0);
+        SavingsAccount savingsAccount = new SavingsAccount(654321, "Jane Smith", 2000.0, 5.0);
+
+        try {
+            account.deposit(500.0);
+            account.withdraw(200.0);
+
+            savingsAccount.withdraw(200.0);
+            savingsAccount.calculateInterest();
+
+            account.displayAccountDetails();
+            account.displayTransactionHistory();
+
+            savingsAccount.displayAccountDetails();
+            savingsAccount.displayTransactionHistory();
+            savingsAccount.generateAccountSummary();
+        } catch (Exception e) {
+            handleException(e);
+        }
+    }
+
+    private static void handleException(Exception e) {
+        if (e instanceof InsufficientFundsException) {
+            System.out.println("Insufficient funds: " + e.getMessage());
+        } else if (e instanceof InvalidInputException) {
+            System.out.println("Invalid input: " + e.getMessage());
+        } else {
+            System.out.println("An unexpected error occurred: " + e.getMessage());
+        }
+    }
+}
