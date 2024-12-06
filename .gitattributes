@@ -1,5 +1,7 @@
-# Auto detect text files and perform LF normalization
-* text=auto
+import java.util.ArrayList;
+import java.util.List;
+
+public class BankAccount {
     private final int accountNumber;
     private final String accountHolderName;
     private double balance;
